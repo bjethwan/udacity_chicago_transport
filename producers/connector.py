@@ -33,7 +33,11 @@ def configure_connector():
                     "key.converter": "org.apache.kafka.connect.json.JsonConverter",
                     "value.converter": "org.apache.kafka.connect.json.JsonConverter",
                     "key.converter.schemas.enable": "false",
+                    # Incorrect Rubric: It was said in the course that faust can't handle avro
+                    #"key.converter.schemas.registry.url": "http://localhost:8081",
                     "value.converter.schemas.enable": "false",
+                    # Incorrect Rubric: It was said in the course that faust can't handle avro
+                    #"value.converter.schema.registry.url": "http://localhost:8081",
                     "batch.max.rows": "500",
                     "connection.url": "jdbc:postgresql://postgres:5432/cta",
                     "connection.user": "cta_admin",
