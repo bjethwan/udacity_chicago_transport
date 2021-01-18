@@ -32,12 +32,6 @@ class KafkaConsumer:
         self.consume_timeout = consume_timeout
         self.offset_earliest = offset_earliest
 
-        #
-        #
-        # TODO: Configure the broker properties below. Make sure to reference the project README
-        # and use the Host URL for Kafka and Schema Registry!
-        #
-        #
         self.broker_properties = {
                 "bootstrap.servers": BROKER_URL,
                 "schema.registry.url": SCHEMA_REGISTRY_URL,
@@ -45,7 +39,6 @@ class KafkaConsumer:
 
         }
 
-        # TODO: Create the Consumer, using the appropriate type.
         if is_avro is True:
             self.consumer = AvroConsumer({
                 "bootstrap.servers": self.broker_properties.get("bootstrap.servers"),
@@ -59,29 +52,22 @@ class KafkaConsumer:
                 "group.id": self.broker_properties.get("group.id")
                 })
 
-        #
-        #
-        # TODO: Configure the AvroConsumer and subscribe to the topics. Make sure to think about
-        # how the `on_assign` callback should be invoked.
-        #
-        #
         self.consumer.subscribe(
             [topic_name_pattern], on_assign=self.on_assign)
 
     def on_assign(self, consumer, partitions):
         """Callback for when topic assignment takes place"""
-        # TODO: If the topic is configured to use `offset_earliest` set the partition offset to
-        # the beginning or earliest
-        for partition in partitions:
-            partition.offset = confluent_kafka.OFFSET_BEGINNING
 
-        logger.info("partitions assigned for %s", self.topic_name_pattern)
-        logger.info("consumer on_assign complete!")
+        if self.offset_earliest is True:
+            for partition in partitions:
+                partition.offset = confluent_kafka.OFFSET_BEGINNING
+
+        logger.debug("partitions assigned for %s", self.topic_name_pattern)
+        logger.debug("consumer on_assign complete!")
         consumer.assign(partitions)
 
     async def consume(self):
         """Asynchronously consumes data from kafka topic"""
-        logger.info("Infinite consume started")
         while True:
             num_results = 1
             while num_results > 0:
@@ -91,15 +77,14 @@ class KafkaConsumer:
     def _consume(self):
         """Polls for a message. Returns 1 if a message was received, 0 otherwise"""
         try:
-            logger.info(f"Checking messaage on topic: {self.topic_name_pattern}")
+            logger.debug(f"Checking messaage on topic: {self.topic_name_pattern}")
             message = self.consumer.poll(1.0)
             if message is None:
-                print("no message received by consumer")
+                logger.debug("no message received by consumer")
             elif message.error() is not None:
-                print(f"error from consumer {message.error()}")
+                logger.debug(f"Error while consuming data: {message.error()}")
             else:
-                print(f"consumed message {message.key()}: {message.value()}")
-                logger.info(f"Received messaage on topic: {message.topic()}")
+                logger.debug(f"consumed message {message.key()}: {message.value()}")
                 self.message_handler(message)
                 return 1
         except SerializerError as er:

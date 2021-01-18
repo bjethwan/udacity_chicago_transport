@@ -22,7 +22,11 @@ The Chicago Transit Authority (CTA) has asked us to develop a dashboard displayi
 Our architecture will look like so:
 
 ![Project Architecture](images/diagram.png)
+
+
 ![Port numbers were confusing me](images/port_numbers.png)
+
+
 ![Topic names hidded in consumers(I had to re-write)](images/topic_names.png)
 
 ### Step 1: Create Kafka Producers
