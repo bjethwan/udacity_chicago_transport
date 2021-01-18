@@ -317,6 +317,9 @@ consumers/__pycache__/
 consumers/__pycache__/*.pyc
 *.pyc
 
+producers/__pycache__/
+producers/__pycache__/*.pyc
+
 # Cake - Uncomment if you are using it
 # tools/**
 # !tools/packages.config
