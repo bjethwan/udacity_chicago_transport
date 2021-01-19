@@ -31,6 +31,8 @@ class KafkaConsumer:
         self.sleep_secs = sleep_secs
         self.consume_timeout = consume_timeout
         self.offset_earliest = offset_earliest
+        self.offset_reset_value = "earliest" if offset_earliest is True else "latest"
+
 
         self.broker_properties = {
                 "bootstrap.servers": BROKER_URL,
@@ -43,13 +45,15 @@ class KafkaConsumer:
             self.consumer = AvroConsumer({
                 "bootstrap.servers": self.broker_properties.get("bootstrap.servers"),
                 "schema.registry.url": self.broker_properties.get("schema.registry.url"),
-                "group.id": self.broker_properties.get("group.id")
+                "group.id": self.broker_properties.get("group.id"),
+                'auto.offset.reset': self.offset_reset_value
                 })
         else:
             self.consumer = Consumer(
                 {
                 "bootstrap.servers": self.broker_properties.get("bootstrap.servers"),
-                "group.id": self.broker_properties.get("group.id")
+                "group.id": self.broker_properties.get("group.id"),
+                'auto.offset.reset': self.offset_reset_value
                 })
 
         self.consumer.subscribe(
